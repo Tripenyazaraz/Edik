@@ -13,7 +13,8 @@ opts = {
     "cmds": {
         "ctime": ('текущее время', 'сейчас времени', 'который час'),
         "radio": ('включи музыку', 'воспроизведи радио', 'включи радио'),
-        "stupid1": ('расскажи анекдот', 'рассмеши меня', 'ты знаешь анекдоты')
+        "stupidJoke": ('расскажи анекдот', 'рассмеши меня', 'ты знаешь анекдоты'),
+        "close": ('пока', 'выключись')
     }
 }
 
@@ -32,7 +33,7 @@ def callback(recognizer, audio):
         print("[log] Распознано: " + voice)
 
         if voice.startswith(opts["alias"]):
-            # обращаются к Кеше
+            # обращаются к Эдику
             cmd = voice
 
             for x in opts['alias']:
@@ -74,9 +75,14 @@ def execute_cmd(cmd):
         # воспроизвести радио
         speak("Рито говна не посоветуют")
 
-    elif cmd == 'stupid1':
+    elif cmd == 'stupidJoke':
         # рассказать анекдот
         speak("Рито говна не посоветуют")
+
+    elif cmd == 'close':
+        # выключить Эдика
+        speak("Вернусь в любое время, повелитель")
+        exit()
 
     else:
         print('Команда не распознана, повторите!')
@@ -96,6 +102,10 @@ speak_engine.setProperty('voices', voices[3].id)
 
 speak('Добрый день, повелитель')
 speak('Эдик слушает')
+sr.energy_threshold = 3000 # попробуйте от 50 до 4000
 
-stop_listenning = r.listen_in_background(m, callback)
-while True: time.sleep(0.1)
+while True:
+    with m as source:
+        audio = r.listen(source)
+    callback(r, audio)
+    time.sleep(0.1)
